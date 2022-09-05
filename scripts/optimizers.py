@@ -1,8 +1,9 @@
 import pandas
 
+from collections import namedtuple
 from matplotlib import pyplot as plt
 from matplotlib.figure import Figure
-from sklearn.cluster import KMeans
+from sklearn.cluster import KMeans, DBSCAN
 from sklearn.metrics import silhouette_score
 
 
@@ -73,3 +74,21 @@ def optimize_kmeans(data: pandas.DataFrame, k_range: list, fig_ovr: dict = None,
         plt.show()
     elif not show:
         return plt.gcf()
+
+
+def dbscan_optimizer(eps_list, min_sample_list, data=pandas.DataFrame) -> dict:
+
+    Couple_hp = namedtuple("Couple_hp", ["eps", "min_sample"])
+    metrics = {}
+
+    for eps in eps_list:
+        for min_sample in min_sample_list:
+            dbscan = DBSCAN(eps=eps, min_samples=min_sample)
+            y_predicted = dbscan.fit_predict(data)
+            try:
+                sil = silhouette_score(data, y_predicted)
+                metrics[sil] = Couple_hp(eps=eps, min_sample=min_sample)
+            except ValueError:
+                continue
+
+    return metrics

@@ -1,0 +1,3 @@
+https://iopscience.iop.org/article/10.1088/1755-1315/31/1/012012/pdf  : DBSCAN epsilon search
+https://towardsdatascience.com/machine-learning-clustering-dbscan-determine-the-optimal-value-for-epsilon-eps-python-example-3100091cfbc : DBSCAN epsilon search
+https://machinelearningknowledge.ai/agglomerative-hierarchical-clustering-in-python-sklearn-scipy/ : agglomerative clustering | Dendrogram of choice of n clusters
