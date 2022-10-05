@@ -17,6 +17,7 @@ class Easy_pca():
     except the target col which is used for the Hues of plots and can be categorical or numerical
     - taget_cal : the name of the column (str) targeted in case of clustering purpose, default is None
     """
+
     def __init__(self, dataset: pd.DataFrame, target_col: str = None) -> None:
 
         if target_col is None:

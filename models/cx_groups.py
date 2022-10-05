@@ -1,8 +1,7 @@
 import pandas
-import numpy
-import plotly.graph_objects as go
 
-from models.group_stats import Group_stats
+from models.group_stats import create_group_stats
+from scripts.model_helpers import get_radar, calc_average_var
 
 
 class Cx_groups():
@@ -11,61 +10,44 @@ class Cx_groups():
         self.dataframe = dataframe
         self.got_standard_stats = False
         self.got_scaled_stats = False
-
-    def calc_average_var(self, dataframe, target):
-        return numpy.average(
-                dataframe[dataframe[target].notna()][target]
-            )
+        self.subset = ["rating_avg", "delta_days", "distance_cx_seller", "recency", "frequency"]
+        self.scaled_subset = [f"scaled_{col}" for col in self.subset]
 
     def get_standard_stats(self):
-
+        Group_stats = create_group_stats(subset=self.subset)
         self.standard_stats = Group_stats(
-                rating_avg=self.calc_average_var(dataframe=self.dataframe, target="rating_avg"),
-                delta_days=self.calc_average_var(dataframe=self.dataframe, target="delta_days"),
-                distance_cx_seller=self.calc_average_var(dataframe=self.dataframe, target="distance_cx_seller"),
-                recency=self.calc_average_var(dataframe=self.dataframe, target="recency"),
-                frequency=self.calc_average_var(dataframe=self.dataframe, target="frequency"),
+                rating_avg=calc_average_var(dataframe=self.dataframe, target="rating_avg"),
+                delta_days=calc_average_var(dataframe=self.dataframe, target="delta_days"),
+                distance_cx_seller=calc_average_var(dataframe=self.dataframe, target="distance_cx_seller"),
+                recency=calc_average_var(dataframe=self.dataframe, target="recency"),
+                frequency=calc_average_var(dataframe=self.dataframe, target="frequency"),
             )
         self.got_standard_stats = True
 
     def get_scaled_stats(self):
-
+        Group_stats = create_group_stats(subset=self.scaled_subset)
         self.scaled_stats = Group_stats(
-                rating_avg=self.calc_average_var(dataframe=self.dataframe, target="scaled_rating_avg"),
-                delta_days=self.calc_average_var(dataframe=self.dataframe, target="scaled_delta_days"),
-                distance_cx_seller=self.calc_average_var(
+                scaled_rating_avg=calc_average_var(dataframe=self.dataframe, target="scaled_rating_avg"),
+                scaled_delta_days=calc_average_var(dataframe=self.dataframe, target="scaled_delta_days"),
+                scaled_distance_cx_seller=calc_average_var(
                     dataframe=self.dataframe,
                     target="scaled_distance_cx_seller"
                     ),
-                recency=self.calc_average_var(dataframe=self.dataframe, target="scaled_recency"),
-                frequency=self.calc_average_var(dataframe=self.dataframe, target="scaled_frequency"),
+                scaled_recency=calc_average_var(dataframe=self.dataframe, target="scaled_recency"),
+                scaled_frequency=calc_average_var(dataframe=self.dataframe, target="scaled_frequency"),
             )
         self.got_scaled_stats = True
 
-    def get_radar(self):
+    def store_radar(self):
 
         if not self.got_scaled_stats:
             self.get_scaled_stats()
 
-        r_values = [
-            self.scaled_stats.rating_avg, self.scaled_stats.delta_days, self.scaled_stats.distance_cx_seller,
-            self.scaled_stats.recency, self.scaled_stats.frequency
-            ]
-        thetas = ["rating_avg", "delta_days", "distance_cx_seller", "recency", "frequency"]
-        self.trace = go.Scatterpolar(r=r_values, theta=thetas, fill="toself", name=f"radar {self.name}")
-
-        fig = go.Figure(data=self.trace)
-
-        fig.update_layout(
-            polar=dict(
-                radialaxis=dict(
-                    visible=True
-                ),
-            ),
-            showlegend=False
-        )
-
-        return fig
+        r_values = [stat for stat in self.scaled_stats]
+        thetas = self.scaled_subset
+        radar = get_radar(stats=r_values, subset=thetas, name=self.name)
+        self.trace = radar[0]
+        return radar[1]
 
     def __str__(self) -> str:
         return self.name
