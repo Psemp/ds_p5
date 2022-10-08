@@ -9,6 +9,7 @@ private/*
 pickles/*
 final_datasets/*
 html/*
+*.pdf
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
