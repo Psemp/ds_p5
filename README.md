@@ -20,7 +20,7 @@ Vous devrez fournir à l’équipe marketing une description actionnable de votr
 > - PEP8 contrôlée par Flake8, cf. requirements.txt (`pip install -r requirements.txt`, ou équivalent conda)
 > - Le projet utilise python-dotenv pour permettre le réglage de variables d'environnements locales et spécifiques à la machine utilisée - ici un fichier .env non versionne précise le nombre de cœurs et le DPI du moniteur. Ne pas avoir cette dépendance ne nuit pas à l'exécution des programmes mais présuppose par exemple les DPI du moniteurs a 100 DPI.
 > - Le projet utilise a plusieurs instance le module de la stdlib concurrent.futures pour effectuer des taches utilisant du multiprocessing. Une alternative au MP est proposée dans les scripts si cette approche ne convient pas pour des raisons matérielles.
-
+> - Pour faciliter l’accès aux diagrammes interactifs générés par Plotly, les notebooks sont exportés en .html
 
 Les notebooks ont un ordre d'exécution détaillé dans le fichier nb_exe_order.txt -->
 - Le premier (Rekey) se focalise sur un allègement considérable du dataset et du passage de clés primaires et étrangères des dumps SQL de Hexadécimal a uint32 (on note un gain de 28% en taille, aucun test n'a été fait pour estimer le temps de traitement gagné mais les avantages de travailler avec un dtype numpy comparé à une chaine de chars est généralement très grande. Néanmoins, ce notebook s'exécute en 2693.51s). A noter que pour que le dtype d'une variable soit préservée, il faut utiliser le format Pickle et non CSV (si CSV, il suffit de re enforce les bons dtypes)
